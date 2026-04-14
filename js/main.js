@@ -105,6 +105,7 @@ const App = () => {
   const [filterString, setFilterString] = useState(
     localStorage.getItem('filter') || ''
   );
+  const [exportFormat, setExportFormat] = useState('svg');
 
   // non-triggering state variables
   const _bin = useRef(null);
@@ -709,6 +710,50 @@ const App = () => {
     windowSize.current.width = width;
   };
 
+  const sanitizeFilename = (value) => {
+    return (value || 'plot').replace(/[^a-z0-9._-]/gi, '_');
+  };
+
+  const exportAllVisiblePlots = async (format) => {
+    if (!window.Plotly) {
+      return;
+    }
+
+    const plotlyFormat = format === 'jpg' ? 'jpeg' : format;
+
+    const visiblePlotDivs = Array.from(
+      document.querySelectorAll('.plotly-graph-div')
+    ).filter((plotDiv) => {
+      return !plotDiv.closest('.hidden-window');
+    });
+
+    if (visiblePlotDivs.length === 0) {
+      window.alert('No visible plot panes to export.');
+      return;
+    }
+
+    let succeeded = 0;
+    let failed = 0;
+
+    for (let index = 0; index < visiblePlotDivs.length; index++) {
+      const graphDiv = visiblePlotDivs[index];
+      try {
+        await window.Plotly.downloadImage(graphDiv, {
+          format: plotlyFormat,
+          filename: sanitizeFilename(graphDiv.id || `plot_${index + 1}`),
+        });
+        succeeded += 1;
+      } catch (error) {
+        // Continue exporting remaining plots even if one export fails.
+        failed += 1;
+      }
+    }
+
+    window.alert(
+      `Export complete: ${succeeded} succeeded, ${failed} failed (${format.toUpperCase()}).`
+    );
+  };
+
   let panes = Object.keys(storeData.panes).map((id) => {
     let pane = storeData.panes[id];
 
@@ -807,6 +852,9 @@ const App = () => {
       activeLayout={selection.layoutID}
       envIDs={selection.envIDs}
       layoutList={getCurrLayoutList()}
+      exportFormat={exportFormat}
+      onExportFormatChange={setExportFormat}
+      onExportAllPlots={exportAllVisiblePlots}
       onRepackButton={() => {
         relayout();
         relayout();

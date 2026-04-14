@@ -17,6 +17,9 @@ function ViewControls(props) {
     envIDs,
     activeLayout,
     layoutList,
+    exportFormat,
+    onExportFormatChange,
+    onExportAllPlots,
     onViewManageButton,
     onRepackButton,
     onViewChange,
@@ -60,6 +63,46 @@ function ViewControls(props) {
           </button>
           <ul className="dropdown-menu" aria-labelledby="viewDropdown">
             {view_options}
+          </ul>
+        </div>
+        <button
+          data-toggle="tooltip"
+          title="Export all visible plots"
+          data-placement="bottom"
+          className="btn btn-default"
+          disabled={!(connected && envIDs.length > 0)}
+          onClick={() => onExportAllPlots(exportFormat)}
+        >
+          Export Plots ({exportFormat.toUpperCase()})
+        </button>
+        <div className="btn-group" role="group">
+          <button
+            className="btn btn-default dropdown-toggle"
+            type="button"
+            id="exportAllPlotsDropdown"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+            disabled={!(connected && envIDs.length > 0)}
+          >
+            {exportFormat.toUpperCase()}&nbsp;
+            <span className="caret" />
+          </button>
+          <ul className="dropdown-menu" aria-labelledby="exportAllPlotsDropdown">
+            {['png', 'jpg', 'svg'].map((format) => (
+              <li key={format}>
+                <a
+                  href={'#' + format}
+                  onClick={(ev) => {
+                    ev.preventDefault();
+                    onExportFormatChange(format);
+                  }}
+                >
+                  {format.toUpperCase()}
+                  {format === exportFormat ? <span>&nbsp;&#10003;</span> : null}
+                </a>
+              </li>
+            ))}
           </ul>
         </div>
         <button
