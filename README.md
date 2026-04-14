@@ -159,6 +159,15 @@ Using the repack icon (9 boxes), visdom will attempt to pack your windows in a w
 
 > **Note**: Due to the reliance on row/column ordering and `ReactGridLayout` the final layout might be slightly different than what might be expected. We're working on improving that experience or providing alternatives that give more fine-tuned control.
 
+#### Exporting Visible Plots
+From the View toolbar, you can export all currently visible plot windows at once.
+
+1. Choose an export format from the dropdown (`PNG`, `JPG`, or `SVG`).
+2. Click `Export Plots`.
+
+Visdom then triggers sequential downloads for each visible Plotly plot in the current environment view.
+Windows hidden by the current filter are skipped.
+
 #### Reloading Views
 <p align="center"><img align="center" src="https://user-images.githubusercontent.com/19650074/198821436-6c7957b5-dd67-4afc-9fc3-4bf074137022.gif" width="600" /></p>
 
